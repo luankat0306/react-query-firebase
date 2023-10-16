@@ -7,7 +7,6 @@
 "publishConfig": {
   "registry": "https://npm.pkg.github.com/luankat0306"
 },
-  "private": true,
   "description": "React Query hooks for Firebase.",
   "keywords": [
     "react",
