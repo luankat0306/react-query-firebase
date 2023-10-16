@@ -3,10 +3,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/luankat0306/react-query-firebase"
-},
-"publishConfig": {
-  "registry": "https://npm.pkg.github.com/luankat0306"
-},
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/luankat0306"
+  },
   "description": "React Query hooks for Firebase.",
   "keywords": [
     "react",
