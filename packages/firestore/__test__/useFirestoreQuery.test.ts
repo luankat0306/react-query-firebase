@@ -62,7 +62,7 @@ describe("useFirestoreQuery", () => {
       const ref = collection(firestore, "tests", id, id);
 
       const { result, waitFor } = renderHook(
-        () => useFirestoreQuery(hookId, ref),
+        () => useFirestoreQuery([hookId], ref),
         { wrapper }
       );
 
@@ -85,7 +85,7 @@ describe("useFirestoreQuery", () => {
 
       const { result, waitFor } = renderHook(
         () =>
-          useFirestoreQuery(hookId, ref, {
+          useFirestoreQuery([hookId], ref, {
             source: "cache",
           }),
         { wrapper }
@@ -108,7 +108,7 @@ describe("useFirestoreQuery", () => {
 
       const { result, waitFor } = renderHook(
         () =>
-          useFirestoreQuery(hookId, ref, {
+          useFirestoreQuery([hookId], ref, {
             source: "server",
           }),
         { wrapper }
@@ -141,7 +141,7 @@ describe("useFirestoreQuery", () => {
       });
 
       const { result, waitFor } = renderHook(
-        () => useFirestoreQuery(hookId, ref),
+        () => useFirestoreQuery([hookId], ref),
         {
           wrapper,
         }
@@ -181,7 +181,7 @@ describe("useFirestoreQuery", () => {
 
       const { result, waitFor } = renderHook(
         () =>
-          useFirestoreQuery<Foo, Bar>(hookId, ref, undefined, {
+          useFirestoreQuery<Foo, Bar>([hookId], ref, undefined, {
             select(snapshot) {
               return {
                 bar: snapshot.docs[0].data().bar.toString(),
@@ -211,7 +211,7 @@ describe("useFirestoreQuery", () => {
       const { result, waitFor, unmount } = renderHook(
         () =>
           useFirestoreQuery(
-            hookId,
+            [hookId],
             ref,
             {
               subscribe: true,
@@ -283,7 +283,7 @@ describe("useFirestoreQuery", () => {
       >(
         ({ id, reference }) =>
           useFirestoreQuery(
-            id,
+            [id],
             reference,
             {
               subscribe: true,
@@ -342,7 +342,7 @@ describe("useFirestoreQuery", () => {
       >(
         ({ id, reference }) =>
           useFirestoreQuery(
-            id,
+            [id],
             reference,
             {
               subscribe: true,
@@ -370,7 +370,7 @@ describe("useFirestoreQuery", () => {
       >(
         ({ id, reference }) =>
           useFirestoreQuery(
-            id,
+            [id],
             reference,
             {
               subscribe: true,
@@ -421,7 +421,7 @@ describe("useFirestoreQuery", () => {
       });
 
       const { result, waitFor } = renderHook(
-        () => useFirestoreQueryData(hookId, ref),
+        () => useFirestoreQueryData([hookId], ref),
         { wrapper }
       );
 
@@ -443,7 +443,7 @@ describe("useFirestoreQuery", () => {
 
       const { result, waitFor } = renderHook(
         () =>
-          useFirestoreQueryData(hookId, ref, undefined, {
+          useFirestoreQueryData([hookId], ref, undefined, {
             select() {
               return [
                 {
@@ -473,7 +473,7 @@ describe("useFirestoreQuery", () => {
 
       const { result, waitFor } = renderHook(
         () =>
-          useFirestoreQueryData<"id">(hookId, ref, {
+          useFirestoreQueryData<"id">([hookId], ref, {
             idField: "id",
           }),
         { wrapper }
@@ -481,8 +481,8 @@ describe("useFirestoreQuery", () => {
 
       await waitFor(() => result.current.isSuccess, { timeout: 5000 });
 
-      expect(result.current.data[0].foo).toEqual("bar");
-      expect(typeof result.current.data[0].id).toBe("string");
+      expect(result.current.data?.[0].foo).toEqual("bar");
+      expect(typeof result.current.data?.[0].id).toBe("string");
     });
   });
 
@@ -496,7 +496,7 @@ describe("useFirestoreQuery", () => {
       const hookId = genId();
 
       const { result, waitFor } = renderHook(
-        () => useFirestoreQueryData(hookId, namedQuery(firestore, bundle)),
+        () => useFirestoreQueryData([hookId], namedQuery(firestore, bundle)),
         { wrapper }
       );
 
@@ -532,7 +532,7 @@ describe("useFirestoreQuery", () => {
       const mock = jest.fn();
       const { result, waitFor } = renderHook(
         () =>
-          useFirestoreInfiniteQuery(hookId, q, (snapshot) => {
+          useFirestoreInfiniteQuery([hookId], q, (snapshot) => {
             mock(snapshot);
             return undefined;
           }),
@@ -541,8 +541,8 @@ describe("useFirestoreQuery", () => {
 
       await waitFor(() => result.current.isSuccess, { timeout: 5000 });
 
-      expect(result.current.data.pages.length).toBe(1); // QuerySnapshot
-      expect(result.current.data.pages[0].docs.length).toBe(2);
+      expect(result.current.data?.pages.length).toBe(1); // QuerySnapshot
+      expect(result.current.data?.pages[0].docs.length).toBe(2);
 
       await act(async () => {
         await result.current.fetchNextPage();
@@ -575,7 +575,7 @@ describe("useFirestoreQuery", () => {
 
       const { result, waitFor } = renderHook(
         () =>
-          useFirestoreInfiniteQuery(hookId, q, (snapshot) => {
+          useFirestoreInfiniteQuery([hookId], q, (snapshot) => {
             return query(q, startAfter(snapshot.docs[1]));
           }),
         { wrapper }
@@ -583,8 +583,8 @@ describe("useFirestoreQuery", () => {
 
       await waitFor(() => result.current.isSuccess, { timeout: 5000 });
 
-      expect(result.current.data.pages.length).toBe(1); // QuerySnapshot
-      expect(result.current.data.pages[0].docs.length).toBe(2);
+      expect(result.current.data?.pages.length).toBe(1); // QuerySnapshot
+      expect(result.current.data?.pages[0].docs.length).toBe(2);
 
       await act(async () => {
         await result.current.fetchNextPage();
@@ -592,8 +592,8 @@ describe("useFirestoreQuery", () => {
 
       await waitFor(() => result.current.isSuccess, { timeout: 5000 });
 
-      expect(result.current.data.pages.length).toBe(2);
-      expect(result.current.data.pages[1].docs.length).toBe(2);
+      expect(result.current.data?.pages.length).toBe(2);
+      expect(result.current.data?.pages[1].docs.length).toBe(2);
     });
   });
 
@@ -619,7 +619,7 @@ describe("useFirestoreQuery", () => {
       const mock = jest.fn();
       const { result, waitFor } = renderHook(
         () =>
-          useFirestoreInfiniteQueryData(hookId, q, (data) => {
+          useFirestoreInfiniteQueryData([hookId], q, (data) => {
             mock(data);
             return undefined;
           }),
@@ -628,9 +628,9 @@ describe("useFirestoreQuery", () => {
 
       await waitFor(() => result.current.isSuccess, { timeout: 5000 });
 
-      expect(result.current.data.pages.length).toBe(1);
-      expect(result.current.data.pages[0].length).toBe(2);
-      expect(result.current.data.pages[0]).toEqual([{ foo: 1 }, { foo: 2 }]);
+      expect(result.current.data?.pages.length).toBe(1);
+      expect(result.current.data?.pages[0].length).toBe(2);
+      expect(result.current.data?.pages[0]).toEqual([{ foo: 1 }, { foo: 2 }]);
 
       await act(async () => {
         await result.current.fetchNextPage();
@@ -662,7 +662,7 @@ describe("useFirestoreQuery", () => {
 
       const { result, waitFor } = renderHook(
         () =>
-          useFirestoreInfiniteQueryData(hookId, q, () => {
+          useFirestoreInfiniteQueryData([hookId], q, () => {
             return query(q, startAfter(2));
           }),
         { wrapper }
@@ -670,8 +670,8 @@ describe("useFirestoreQuery", () => {
 
       await waitFor(() => result.current.isSuccess, { timeout: 5000 });
 
-      expect(result.current.data.pages[0].length).toBe(2);
-      expect(result.current.data.pages[0]).toEqual([{ foo: 1 }, { foo: 2 }]);
+      expect(result.current.data?.pages[0].length).toBe(2);
+      expect(result.current.data?.pages[0]).toEqual([{ foo: 1 }, { foo: 2 }]);
 
       await act(async () => {
         await result.current.fetchNextPage();
@@ -679,9 +679,9 @@ describe("useFirestoreQuery", () => {
 
       await waitFor(() => result.current.isSuccess, { timeout: 5000 });
 
-      expect(result.current.data.pages.length).toBe(2);
-      expect(result.current.data.pages[1].length).toBe(2);
-      expect(result.current.data.pages[1]).toEqual([{ foo: 3 }, { foo: 4 }]);
+      expect(result.current.data?.pages.length).toBe(2);
+      expect(result.current.data?.pages[1].length).toBe(2);
+      expect(result.current.data?.pages[1]).toEqual([{ foo: 3 }, { foo: 4 }]);
     });
 
     test("it provides the idField", async () => {
@@ -717,11 +717,11 @@ describe("useFirestoreQuery", () => {
 
         await waitFor(() => result.current.isSuccess, { timeout: 5000 });
 
-        expect(result.current.data.pages[0].length).toBe(2);
-        expect(result.current.data.pages[0][0].foo).toEqual(1);
-        expect(typeof result.current.data.pages[0][0].id).toBe("string");
-        expect(result.current.data.pages[0][1].foo).toEqual(2);
-        expect(typeof result.current.data.pages[0][1].id).toBe("string");
+        expect(result.current.data?.pages[0].length).toBe(2);
+        expect(result.current.data?.pages[0][0].foo).toEqual(1);
+        expect(typeof result.current.data?.pages[0][0].id).toBe("string");
+        expect(result.current.data?.pages[0][1].foo).toEqual(2);
+        expect(typeof result.current.data?.pages[0][1].id).toBe("string");
 
         await act(async () => {
           await result.current.fetchNextPage();
@@ -729,12 +729,12 @@ describe("useFirestoreQuery", () => {
 
         await waitFor(() => result.current.isSuccess, { timeout: 5000 });
 
-        expect(result.current.data.pages.length).toBe(2);
-        expect(result.current.data.pages[1].length).toBe(2);
-        expect(result.current.data.pages[1][0].foo).toEqual(3);
-        expect(typeof result.current.data.pages[1][0].id).toBe("string");
-        expect(result.current.data.pages[1][1].foo).toEqual(4);
-        expect(typeof result.current.data.pages[1][1].id).toBe("string");
+        expect(result.current.data?.pages.length).toBe(2);
+        expect(result.current.data?.pages[1].length).toBe(2);
+        expect(result.current.data?.pages[1][0].foo).toEqual(3);
+        expect(typeof result.current.data?.pages[1][0].id).toBe("string");
+        expect(result.current.data?.pages[1][1].foo).toEqual(4);
+        expect(typeof result.current.data?.pages[1][1].id).toBe("string");
       });
     });
   });

@@ -163,7 +163,7 @@ describe("useFirestoreMutation", () => {
             firestore,
             async (tsx) => {
               const doc = await tsx.get(ref);
-              const newValue = doc.data().foo + 1;
+              const newValue = (doc.data() as Doc).foo + 1;
               tsx.update(ref, { foo: newValue });
               return newValue;
             },
@@ -186,7 +186,7 @@ describe("useFirestoreMutation", () => {
 
       const snapshot = await getDoc(ref);
 
-      expect(snapshot.data().foo).toBe(11);
+      expect(snapshot.data()?.foo).toBe(11);
       expect(mock.mock.calls[0][0]).toBe(11);
       expect(mock.mock.calls.length).toBe(1);
     });
@@ -224,11 +224,11 @@ describe("useFirestoreMutation", () => {
       await waitFor(() => result.current.isSuccess, { timeout: 5000 });
 
       const snapshot1 = await getDoc(ref1);
-      expect(snapshot1.data().foo).toEqual("baz");
+      expect(snapshot1.data()?.foo).toEqual("baz");
 
       const snapshot2 = await getDoc(ref2);
-      expect(snapshot2.data().foo).toEqual("bar");
-      expect(snapshot2.data().bar).toEqual("baz");
+      expect(snapshot2.data()?.foo).toEqual("bar");
+      expect(snapshot2.data()?.bar).toEqual("baz");
 
       const snapshot3 = await getDoc(ref3);
       expect(snapshot3.exists()).toBe(false);

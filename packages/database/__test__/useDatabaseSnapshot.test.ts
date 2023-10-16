@@ -1,5 +1,5 @@
 import React from "react";
-import { QueryClient } from "react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { renderHook } from "@testing-library/react-hooks";
 import { genId, init } from "./helpers";
 import { useDatabaseSnapshot, useDatabaseValue } from "../src";
@@ -36,7 +36,7 @@ describe("Database", () => {
       const dbRef = ref(database, "foo");
 
       const { result, waitFor } = renderHook(
-        () => useDatabaseSnapshot(hookId, dbRef),
+        () => useDatabaseSnapshot([hookId], dbRef),
         {
           wrapper,
         }
@@ -45,7 +45,7 @@ describe("Database", () => {
       await waitFor(() => result.current.isSuccess);
 
       expect(result.current.data).toBeInstanceOf(DataSnapshot);
-      expect(result.current.data.exists()).toBe(false);
+      expect(result.current.data?.exists()).toBe(false);
     });
 
     test("it returns a valid snapshot with data", async () => {
@@ -55,7 +55,7 @@ describe("Database", () => {
       await set(dbRef, { foo: "bar" });
 
       const { result, waitFor } = renderHook(
-        () => useDatabaseSnapshot(hookId, dbRef),
+        () => useDatabaseSnapshot([hookId], dbRef),
         {
           wrapper,
         }
@@ -64,8 +64,8 @@ describe("Database", () => {
       await waitFor(() => result.current.isSuccess);
 
       expect(result.current.data).toBeInstanceOf(DataSnapshot);
-      expect(result.current.data.exists()).toBe(true);
-      expect(result.current.data.val()).toEqual({ foo: "bar" });
+      expect(result.current.data?.exists()).toBe(true);
+      expect(result.current.data?.val()).toEqual({ foo: "bar" });
     });
 
     test("it subscribes to data snapshots", async () => {
@@ -78,7 +78,7 @@ describe("Database", () => {
       const { result, waitFor, unmount } = renderHook(
         () =>
           useDatabaseSnapshot(
-            hookId,
+            [hookId],
             dbRef,
             { subscribe: true },
             {
@@ -95,8 +95,8 @@ describe("Database", () => {
       await waitFor(() => result.current.isSuccess);
 
       expect(result.current.data).toBeInstanceOf(DataSnapshot);
-      expect(result.current.data.exists()).toBe(true);
-      expect(result.current.data.val()).toEqual({ foo: "bar" });
+      expect(result.current.data?.exists()).toBe(true);
+      expect(result.current.data?.val()).toEqual({ foo: "bar" });
 
       await act(async () => {
         await update(dbRef, { bar: "baz" });
@@ -104,7 +104,7 @@ describe("Database", () => {
 
       await waitFor(() => result.current.isSuccess);
 
-      expect(result.current.data.val()).toEqual({ foo: "bar", bar: "baz" });
+      expect(result.current.data?.val()).toEqual({ foo: "bar", bar: "baz" });
 
       unmount();
 
@@ -125,7 +125,7 @@ describe("Database", () => {
       const hook1 = renderHook(
         () =>
           useDatabaseSnapshot(
-            hookId,
+            [hookId],
             dbRef,
             { subscribe: true },
             {
@@ -141,7 +141,7 @@ describe("Database", () => {
       const hook2 = renderHook(
         () =>
           useDatabaseSnapshot(
-            hookId,
+            [hookId],
             dbRef,
             { subscribe: true },
             {
@@ -179,7 +179,7 @@ describe("Database", () => {
       const dbRef = ref(database, "foo");
 
       const { result, waitFor } = renderHook(
-        () => useDatabaseValue(hookId, dbRef),
+        () => useDatabaseValue([hookId], dbRef),
         {
           wrapper,
         }
@@ -197,7 +197,7 @@ describe("Database", () => {
       await set(dbRef, 10);
 
       const { result, waitFor } = renderHook(
-        () => useDatabaseValue<number>(hookId, dbRef),
+        () => useDatabaseValue<number>([hookId], dbRef),
         {
           wrapper,
         }
@@ -216,7 +216,7 @@ describe("Database", () => {
 
       const { result, waitFor } = renderHook(
         () =>
-          useDatabaseValue<number, string>(hookId, dbRef, undefined, {
+          useDatabaseValue<number, string>([hookId], dbRef, undefined, {
             select(value) {
               return value.toString();
             },
@@ -241,7 +241,7 @@ describe("Database", () => {
       ]);
 
       const { result, waitFor } = renderHook(
-        () => useDatabaseValue(hookId, dbRef, { toArray: true }),
+        () => useDatabaseValue([hookId], dbRef, { toArray: true }),
         {
           wrapper,
         }
@@ -264,7 +264,7 @@ describe("Database", () => {
       ]);
 
       const { result, waitFor } = renderHook(
-        () => useDatabaseValue(hookId, dbRef, { toArray: true }),
+        () => useDatabaseValue([hookId], dbRef, { toArray: true }),
         {
           wrapper,
         }
@@ -283,7 +283,7 @@ describe("Database", () => {
       await set(dbRef, { foo: "bar", bar: "baz" });
 
       const { result, waitFor } = renderHook(
-        () => useDatabaseValue(hookId, dbRef, undefined),
+        () => useDatabaseValue([hookId], dbRef, undefined),
         {
           wrapper,
         }
@@ -307,7 +307,7 @@ describe("Database", () => {
       const { result, waitFor, unmount } = renderHook(
         () =>
           useDatabaseValue(
-            hookId,
+            [hookId],
             dbRef,
             { subscribe: true, toArray: true },
             {
@@ -353,7 +353,7 @@ describe("Database", () => {
       const hook1 = renderHook(
         () =>
           useDatabaseValue(
-            hookId,
+            [hookId],
             dbRef,
             { subscribe: true },
             {
@@ -369,7 +369,7 @@ describe("Database", () => {
       const hook2 = renderHook(
         () =>
           useDatabaseValue(
-            hookId,
+            [hookId],
             dbRef,
             { subscribe: true },
             {
