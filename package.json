@@ -5,7 +5,7 @@
     "url": "https://github.com/luankat0306/react-query-firebase"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/luankat0306"
+    "@luankat0306:registry": "https://npm.pkg.github.com"
   },
   "description": "React Query hooks for Firebase.",
   "keywords": [
