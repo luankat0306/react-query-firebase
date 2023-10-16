@@ -51,6 +51,7 @@ export function init(): any {
         cacheTime: 0,
       },
     },
+
     logger: {
       log: console.log,
       warn: console.warn,
